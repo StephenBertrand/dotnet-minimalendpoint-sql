@@ -11,6 +11,7 @@ public sealed class TodosDbContext(DbContextOptions<TodosDbContext> options) : D
         var todo = modelBuilder.Entity<Todo>();
         todo.ToTable("Todos");
         todo.HasKey(t => t.Id);
+        todo.Property(t => t.Id).UseIdentityColumn();
         todo.Property(t => t.Title).HasMaxLength(200).IsRequired();
         todo.Property(t => t.IsComplete).IsRequired();
         todo.Property(t => t.CreatedUtc).IsRequired();

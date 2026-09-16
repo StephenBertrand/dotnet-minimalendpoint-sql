@@ -31,12 +31,18 @@ if (builder.ExecutionContext.IsRunMode)
 
 var todos = sql.AddDatabase("todos");
 
-builder.AddProject<Projects.Api>("api")
+var api = builder.AddProject<Projects.Api>("api")
     .WithExternalHttpEndpoints()
     .WithHttpHealthCheck("/health")
     .WithReference(appConfiguration)
     .WaitFor(appConfiguration)
     .WithReference(todos)
     .WaitFor(todos);
+
+builder.AddProject<Projects.Web>("web")
+    .WithExternalHttpEndpoints()
+    .WithHttpHealthCheck("/health")
+    .WithReference(api)
+    .WaitFor(api);
 
 builder.Build().Run();

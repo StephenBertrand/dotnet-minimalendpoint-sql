@@ -1,6 +1,6 @@
 namespace Api.Features.Todos;
 
-public sealed record TodoResponse(Guid Id, string Title, bool IsComplete, DateTimeOffset CreatedUtc);
+public sealed record TodoResponse(int Id, string Title, bool IsComplete, DateTimeOffset CreatedUtc);
 
 public sealed record CreateTodoRequest(string Title);
 

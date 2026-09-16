@@ -13,10 +13,10 @@ public sealed class TodosEndpoints : IEndpoint
             .WithTags("Todos");
 
         group.MapGet("/", ListAsync).WithName("ListTodos");
-        group.MapGet("/{id:guid}", GetByIdAsync).WithName("GetTodo");
+        group.MapGet("/{id:int}", GetByIdAsync).WithName("GetTodo");
         group.MapPost("/", CreateAsync).WithName("CreateTodo");
-        group.MapPut("/{id:guid}", UpdateAsync).WithName("UpdateTodo");
-        group.MapDelete("/{id:guid}", DeleteAsync).WithName("DeleteTodo");
+        group.MapPut("/{id:int}", UpdateAsync).WithName("UpdateTodo");
+        group.MapDelete("/{id:int}", DeleteAsync).WithName("DeleteTodo");
     }
 
     private static async Task<IResult> ListAsync(TodosDbContext db, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ public sealed class TodosEndpoints : IEndpoint
         return Results.Ok(items);
     }
 
-    private static async Task<IResult> GetByIdAsync(Guid id, TodosDbContext db, CancellationToken cancellationToken)
+    private static async Task<IResult> GetByIdAsync(int id, TodosDbContext db, CancellationToken cancellationToken)
     {
         var todo = await db.Todos.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
         return todo is null
@@ -47,7 +47,6 @@ public sealed class TodosEndpoints : IEndpoint
 
         var todo = new Todo
         {
-            Id = Guid.CreateVersion7(),
             Title = title,
             IsComplete = false,
             CreatedUtc = DateTimeOffset.UtcNow
@@ -59,7 +58,7 @@ public sealed class TodosEndpoints : IEndpoint
         return Results.Created($"/todos/{todo.Id}", new TodoResponse(todo.Id, todo.Title, todo.IsComplete, todo.CreatedUtc));
     }
 
-    private static async Task<IResult> UpdateAsync(Guid id, UpdateTodoRequest request, TodosDbContext db, CancellationToken cancellationToken)
+    private static async Task<IResult> UpdateAsync(int id, UpdateTodoRequest request, TodosDbContext db, CancellationToken cancellationToken)
     {
         if (!TryNormalizeTitle(request.Title, out var title, out var error))
         {
@@ -79,7 +78,7 @@ public sealed class TodosEndpoints : IEndpoint
         return Results.Ok(new TodoResponse(todo.Id, todo.Title, todo.IsComplete, todo.CreatedUtc));
     }
 
-    private static async Task<IResult> DeleteAsync(Guid id, TodosDbContext db, CancellationToken cancellationToken)
+    private static async Task<IResult> DeleteAsync(int id, TodosDbContext db, CancellationToken cancellationToken)
     {
         var todo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
         if (todo is null)

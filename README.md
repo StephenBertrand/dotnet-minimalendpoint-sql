@@ -13,10 +13,11 @@ The API does not branch on “local vs Azure”. It uses connection name `todos`
 
 | Path | Behavior |
 | --- | --- |
-| `GET /hello` | `Hello World` / `Hello New World` via feature flag `HelloNewWorld` |
-| `GET /ping` | Health-style ping |
-| `GET/POST/PUT/DELETE /todos` | EF Core CRUD against SQL |
-| `GET /health` | Aspire readiness (Development) |
+| `web` `/` | Playground UI (separate Aspire project) |
+| `web` `/api/*` | YARP forwarder → `api` via Aspire service discovery |
+| `api` `GET /hello` | `Hello World` / `Hello New World` via feature flag `HelloNewWorld` |
+| `api` `GET /ping` | Health-style ping |
+| `api` `GET/POST/PUT/DELETE /todos` | EF Core CRUD against SQL |
 
 ## Prerequisites
 
@@ -30,12 +31,7 @@ The API does not branch on “local vs Azure”. It uses connection name `todos`
 dotnet run --project src/AppHost
 ```
 
-API (Aspire proxy): http://localhost:5275 (check the dashboard if ports differ)
-
-```bash
-curl http://localhost:5275/todos
-curl -X POST http://localhost:5275/todos -H 'Content-Type: application/json' -d '{"title":"Try SQL"}'
-```
+Open the **web** resource in the Aspire dashboard. The UI calls `/api/...` on itself; YARP forwards those requests to **api** through Aspire service discovery (no CORS, no hardcoded ports). The **api** resource remains available for curl and OpenAPI.
 
 ## Identity and secrets (the point of this sample)
 
@@ -58,7 +54,7 @@ SQL tables belong next to the feature (`TodosDbContext`) until a second feature 
 dotnet test
 ```
 
-Tests use the in-memory EF provider (no Docker).
+Hello and Ping use `WebApplicationFactory` only. Todos tests start a **SQL Server Testcontainer**, apply EF migrations, and run real CRUD (not the in-memory provider). Docker must be running.
 
 ## Migrations
 
