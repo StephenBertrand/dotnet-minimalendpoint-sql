@@ -1,0 +1,44 @@
+@Api_HostAddress = http://localhost:5275
+
+GET {{Api_HostAddress}}/hello
+Accept: application/json
+
+###
+
+GET {{Api_HostAddress}}/ping
+Accept: application/json
+
+###
+
+GET {{Api_HostAddress}}/todos
+Accept: application/json
+
+###
+
+POST {{Api_HostAddress}}/todos
+Content-Type: application/json
+
+{
+  "title": "Try Aspire SQL"
+}
+
+###
+
+@todoId = 00000000-0000-0000-0000-000000000000
+
+GET {{Api_HostAddress}}/todos/{{todoId}}
+Accept: application/json
+
+###
+
+PUT {{Api_HostAddress}}/todos/{{todoId}}
+Content-Type: application/json
+
+{
+  "title": "Try Aspire SQL",
+  "isComplete": true
+}
+
+###
+
+DELETE {{Api_HostAddress}}/todos/{{todoId}}
